@@ -4,6 +4,7 @@ import com.sideproject.dto.EmailDTO;
 import com.sideproject.dto.ResponseDTO;
 import com.sideproject.dto.UserDTO;
 import com.sideproject.entity.UserEntity;
+import com.sideproject.security.TokenProvider;
 import com.sideproject.service.EmailService;
 import com.sideproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,13 @@ public class UserController {
     private final UserService userService;
     private final EmailService emailService;
 
+    private final TokenProvider tokenProvider;
+
     @Autowired
-    UserController(UserService userService, EmailService emailService) {
+    UserController(UserService userService, EmailService emailService, TokenProvider tokenProvider) {
         this.userService = userService;
         this.emailService = emailService;
+        this.tokenProvider = tokenProvider;
     }
 
     @GetMapping ("/signup/id")
@@ -48,10 +52,6 @@ public class UserController {
 
         try {
             // TODO: validation 체크하기, id 없으면 이상한 값으로 나간다.
-            // 임시 id 체크
-            if(userDTO.getId() == null) return ResponseEntity
-                    .badRequest()
-                    .body("id 값을 입력하시오");
 
             UserDTO userResponseDTO = userService.createUser(userDTO);
 
@@ -79,10 +79,16 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-         UserDTO responseUserDTO = userService.getByCredentials(userDTO);
+         UserEntity user = userService.getByCredentials(userDTO);
 
-        // TODO: 변경하기 userEntity 가 조회 되나 안되나로
-        if (responseUserDTO != null) {
+        if (user != null) {
+            final String token = tokenProvider.create(user);
+            final UserDTO responseUserDTO = UserDTO.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .token(token)
+                    .build();
             return ResponseEntity.ok().body(responseUserDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()

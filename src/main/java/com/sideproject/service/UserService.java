@@ -20,7 +20,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserDTO getByCredentials(UserDTO userDTO){
+    public UserEntity getByCredentials(UserDTO userDTO){
         // TODO: Profile은 어떻게 처리할까? 따로 API 개발??
         final UserEntity userEntity = userRepository.findById(userDTO.getId()).orElse(null);
         if (userEntity != null &&
@@ -28,11 +28,7 @@ public class UserService {
                     userDTO.getPassword(),
                     userEntity.getPassword())) {
 
-            userDTO = UserDTO.builder()
-                    .email(userEntity.getEmail())
-                    .name(userEntity.getName())
-                    .build();
-            return userDTO;
+            return userEntity;
         }
         return null;
     }
@@ -45,10 +41,17 @@ public class UserService {
     public boolean getById(final String userId) {
         UserEntity userEntity = userRepository.findById(userId).orElse(null);
         return userEntity == null;
+
     }
 
     public UserDTO createUser(final UserDTO userDTO) {
         try {
+            if(userDTO.getId() == null) new RuntimeException("Invalid arguments");
+            if(userRepository.existsById(userDTO.getId())) {
+                // TODO: log 추가하기
+//                log.warn("Username already exists {]", userDTO.getId());
+                throw new RuntimeException("Username already exists");
+            }
             UserEntity userEntity = UserEntity.builder()
                     .id(userDTO.getId())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
