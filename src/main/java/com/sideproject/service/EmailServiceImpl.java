@@ -32,7 +32,7 @@ public class EmailServiceImpl implements EmailService {
             String authenticationNumber;
 
             // 네이버에서는 FROM 이 설정한 이메일이 아니라면 거부당한다.
-            mailMessage.setFrom(sender + "@naver.com");
+            mailMessage.setFrom(sender + "@gmail.com");
             mailMessage.setTo(recipient);
             authenticationNumber = generateAuthenticationNumber();
             mailMessage.setText("인증 번호 : " + authenticationNumber);

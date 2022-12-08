@@ -108,7 +108,7 @@ public class UserController {
                 .email(decodedEmail)
                 .build();
         try {
-            if ( user != null ) {
+            if ( decodedEmail != null ) {
                 emailService.sendSimpleMail(decodedEmail);
 
                 return ResponseEntity.ok().body("not duplicated");
