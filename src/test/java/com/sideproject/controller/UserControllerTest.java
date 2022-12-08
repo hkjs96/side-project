@@ -36,13 +36,12 @@ public class UserControllerTest {
     @DisplayName("사용자 id 중복 테스트")
     void duplicateIdCheck() throws Exception {
 
-        String userId = "dXNlcjEyMw==";
-        String decodedUserId = "user123";
+        String userId = "user123";
 
         ResponseEntity responseEntity = ResponseEntity
                 .ok().body("not duplicated");
 
-        given(userService.getById(decodedUserId)).willReturn(true);
+        given(userService.getById(userId)).willReturn(true);
 
         mockMvc.perform(
                 get("/signup/id")
@@ -53,15 +52,14 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$").value("not duplicated"))
                 .andDo(print());
 
-        verify(userService).getById(decodedUserId);
+        verify(userService).getById(userId);
     }
 
     @Test
     @DisplayName("사용자 id 중복 테스트 실패")
     void failedDuplicateIdCheck() throws Exception {
 
-        String userId = "dXNlcjEyMw==";
-        String decodedUserId = "user123";
+        String userId = "user123";
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .error("duplicated")
@@ -70,7 +68,7 @@ public class UserControllerTest {
                 .status(HttpStatus.CONFLICT)
                 .body(responseDTO);
 
-        given(userService.getById(decodedUserId)).willReturn(false);
+        given(userService.getById(userId)).willReturn(false);
 
         mockMvc.perform(
                         get("/signup/id")
@@ -82,6 +80,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.data").isEmpty())
                 .andDo(print());
 
-        verify(userService).getById(decodedUserId);
+        verify(userService).getById(userId);
     }
 }

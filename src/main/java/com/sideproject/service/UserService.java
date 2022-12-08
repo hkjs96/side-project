@@ -3,28 +3,55 @@ package com.sideproject.service;
 import com.sideproject.dto.UserDTO;
 import com.sideproject.entity.UserEntity;
 import com.sideproject.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    UserService(UserRepository userRepository){
+    @Autowired
+    UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public UserDTO getByCredentials(UserDTO userDTO){
+        // TODO: Profile은 어떻게 처리할까? 따로 API 개발??
+        final UserEntity userEntity = userRepository.findById(userDTO.getId()).orElse(null);
+        if (userEntity != null &&
+            passwordEncoder.matches(
+                    userDTO.getPassword(),
+                    userEntity.getPassword())) {
+
+            userDTO = UserDTO.builder()
+                    .email(userEntity.getEmail())
+                    .name(userEntity.getName())
+                    .build();
+            return userDTO;
+        }
+        return null;
+    }
+
+    public boolean getByEmail(UserDTO userDTO) {
+        UserEntity userEntity = userRepository.findByEmail(userDTO.getEmail());
+        return userEntity == null;
     }
 
     public boolean getById(final String userId) {
         UserEntity userEntity = userRepository.findById(userId).orElse(null);
-        System.err.println(userEntity);
-        return userEntity == null ? true : false;
+        return userEntity == null;
     }
 
     public UserDTO createUser(final UserDTO userDTO) {
         try {
             UserEntity userEntity = UserEntity.builder()
                     .id(userDTO.getId())
-                    .password(userDTO.getPassword())
+                    .password(passwordEncoder.encode(userDTO.getPassword()))
                     .name(userDTO.getName())
                     .email(userDTO.getEmail())
                     .terms(userDTO.getTerms())
