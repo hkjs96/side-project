@@ -28,11 +28,8 @@ public class UserController {
 
     @GetMapping ("/signup/id")
     public ResponseEntity<?> duplicateIdCheck(@RequestParam("id") String userId) {
-//        String encodedUserId = Base64.getEncoder().encodeToString(userId.getBytes());
 
-        String decodedUserId = decodeBase64(userId);
-
-        boolean result = userService.getById(decodedUserId);
+        boolean result = userService.getById(userId);
 
         if ( result == true ) {
             return ResponseEntity.ok().body("not duplicated");
@@ -50,7 +47,12 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO){
 
         try {
-            // TODO: validation 체크하기
+            // TODO: validation 체크하기, id 없으면 이상한 값으로 나간다.
+            // 임시 id 체크
+            if(userDTO.getId() == null) return ResponseEntity
+                    .badRequest()
+                    .body("id 값을 입력하시오");
+
             UserDTO userResponseDTO = userService.createUser(userDTO);
 
             if (userResponseDTO.getId() != null) {
@@ -75,19 +77,12 @@ public class UserController {
         }
     }
 
-    @PostMapping("/auth/signin")
+    @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-        // UserEntity user =
-
-//        if (user != null) {
+         UserDTO responseUserDTO = userService.getByCredentials(userDTO);
 
         // TODO: 변경하기 userEntity 가 조회 되나 안되나로
-//        userDTO.setId(null);
-        if (userDTO.getId() != null) {
-            final UserDTO responseUserDTO = UserDTO.builder()
-                    .name("임시 유저")
-                    .id(userDTO.getId())
-                    .build();
+        if (responseUserDTO != null) {
             return ResponseEntity.ok().body(responseUserDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
@@ -99,17 +94,14 @@ public class UserController {
         }
     }
 
-    @PostMapping ("/email/verify")
+    @PostMapping ("/signup/email")
     public ResponseEntity<?> verifyEmail(@RequestBody UserDTO userDto) {
-        String decodedEmail = decodeBase64(userDto.getEmail());
 
-        // TODO: DB에 중복된 값이 있는 지 조회
-        UserDTO user = UserDTO.builder()
-                .email(decodedEmail)
-                .build();
+        boolean verification = userService.getByEmail(userDto);
+
         try {
-            if ( decodedEmail != null ) {
-                emailService.sendSimpleMail(decodedEmail);
+            if ( verification == true ) {
+                emailService.sendSimpleMail(userDto.getEmail());
 
                 return ResponseEntity.ok().body("not duplicated");
             } else {
@@ -135,15 +127,14 @@ public class UserController {
         return new String(decodedBytes);
     }
 
-    @PostMapping("/email/authentication")
+    @GetMapping("/signup/email")
     public ResponseEntity<?> verifyAuthenticationNumber(
-            @RequestBody EmailDTO emailDTO
+            @RequestParam String email,
+            @RequestParam String code
             ) {
-        String decodedEmail = decodeBase64(emailDTO.getEmail());
-        String decodedAuthenticationNumber = decodeBase64(emailDTO.getAuthenticationNumber());
 
         try {
-            if(!emailService.verifyEmail(decodedEmail, decodedAuthenticationNumber)){
+            if(!emailService.verifyEmail(email, code)){
                 return ResponseEntity
                         .status(409)
                         .body("Email verification failure");
