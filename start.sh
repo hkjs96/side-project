@@ -7,6 +7,7 @@ then
 
   if [ -e ${JARFILE} ]
   then
+      echo ps -ef || grep "$1"
       echo pgrep -f "$1": `pgrep -f "$1"`
       kill -15 `pgrep -f "$1"`
   elif [ ! -e ${JARFILE} ]
