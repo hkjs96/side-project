@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ -e "$1" ]
 then
-    kill -15 $(pgrep -f "$1")
+    kill -15 `pgrep -f "$1"`
 elif [ ! -e "$1" ]
 then
     echo "File not exists."
@@ -14,4 +14,4 @@ fi
 
 docker-compose -f docker-compose/redis/docker-compose.yml up -d
 
-nohup java -jar $(find . -type f -iname "$1") 1>/dev/null 2>&1 &
+nohup java -jar `find . -type f -iname "$1"` 1>/dev/null 2>&1 &
