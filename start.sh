@@ -7,8 +7,8 @@ then
 
   if [ -e ${JARFILE} ]
   then
-      echo pgrep -f ${JARFILE}: `pgrep -f ${JARFILE}`
-      kill -15 `pgrep -f ${JARFILE}`
+      echo pgrep -f "$1": `pgrep -f "$1"`
+      kill -15 `pgrep -f "$1"`
   elif [ ! -e ${JARFILE} ]
   then
       echo "File not exists."
@@ -22,8 +22,8 @@ then
   echo docker-compose redis
   docker-compose -f docker-compose/redis/docker-compose.yml up -d
 
-  echo "nohup java -jar `find . -type f -iname ${JARFILE}` &"
-  nohup java -jar `find . -type f -iname ${JARFILE}` &
+  echo "nohup java -jar ${JARFILE} &"
+  nohup java -jar ${JARFILE} &
 else
   echo "파라미터가 필요"
 fi
