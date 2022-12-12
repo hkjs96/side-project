@@ -14,4 +14,6 @@ fi
 
 docker-compose -f docker-compose/redis/docker-compose.yml up -d
 
-nohup java -jar `find . -type f -iname "$1"` 1>/dev/null 2>&1 &
+pwd
+
+nohup java -jar `find . -type f -iname "$1"` &
