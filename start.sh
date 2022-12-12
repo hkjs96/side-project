@@ -3,6 +3,7 @@
 if [ -n "$1" ]
 then
   JARFILE=`find . -type f -iname "$1"`
+  echo ${JARFILE}
 
   if [ -e ${JARFILE} ]
   then
@@ -10,7 +11,7 @@ then
   elif [ ! -e ${JARFILE} ]
   then
       echo "File not exists."
-
+  fi
 
   ./gradlew clean
   ./gradlew build
@@ -20,7 +21,6 @@ then
   pwd
 
   nohup java -jar `find . -type f -iname ${JARFILE}` &
-  fi
 else
   echo "파라미터가 필요"
 fi
