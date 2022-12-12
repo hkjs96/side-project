@@ -1,6 +1,5 @@
 package com.sideproject.controller;
 
-import com.sideproject.dto.EmailDTO;
 import com.sideproject.dto.ResponseDTO;
 import com.sideproject.dto.UserDTO;
 import com.sideproject.entity.UserEntity;
@@ -35,7 +34,7 @@ public class UserController {
 
         boolean result = userService.getById(userId);
 
-        if ( result == true ) {
+        if ( result ) {
             return ResponseEntity.ok().body("not duplicated");
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
@@ -106,7 +105,7 @@ public class UserController {
         boolean verification = userService.getByEmail(userDto);
 
         try {
-            if ( verification == true ) {
+            if ( verification ) {
                 emailService.sendSimpleMail(userDto.getEmail());
 
                 return ResponseEntity.ok().body("not duplicated");
@@ -144,7 +143,7 @@ public class UserController {
                 return ResponseEntity
                         .status(409)
                         .body("Email verification failure");
-            };
+            }
             return ResponseEntity
                     .ok()
                     .body("Email verification successful");
