@@ -8,22 +8,22 @@ then
   if [ -e ${JARFILE} ]
   then
       echo pgrep -f ${JARFILE}: `pgrep -f ${JARFILE}`
-      # kill -15 `pgrep -f "$1"`
+      kill -15 `pgrep -f ${JARFILE}`
   elif [ ! -e ${JARFILE} ]
   then
       echo "File not exists."
   fi
 
-#  echo ./gradlew clean
-#  ./gradlew clean
-#  echo ./gradlew build
-#  ./gradlew build
+  echo ./gradlew clean
+  ./gradlew clean
+  echo ./gradlew build
+  ./gradlew build
 
-#  echo docker-compose redis
-#  docker-compose -f docker-compose/redis/docker-compose.yml up -d
+  echo docker-compose redis
+  docker-compose -f docker-compose/redis/docker-compose.yml up -d
 
-#  echo "nohup java -jar ${JARFILE} &"
-#  nohup java -jar ${JARFILE} &
+  echo "nohup java -jar ${JARFILE} &"
+  nohup java -jar ${JARFILE} &
 else
   echo "파라미터가 필요"
 fi
