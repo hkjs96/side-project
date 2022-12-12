@@ -42,10 +42,10 @@ public class WebSecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/signup/**", "/signin")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                    .antMatchers("/signup/**", "/signin")
+                        .permitAll()
+                    .anyRequest()
+                        .authenticated()
         ;
 
         // TODO: JWT 필터 추가 및 예외 핸들링 처리

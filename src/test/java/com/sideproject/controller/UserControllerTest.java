@@ -1,5 +1,7 @@
 package com.sideproject.controller;
 
+import com.sideproject.config.WebMvcConfig;
+import com.sideproject.config.WebSecurityConfig;
 import com.sideproject.dto.ResponseDTO;
 import com.sideproject.service.EmailService;
 import com.sideproject.service.UserService;
@@ -8,9 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -21,6 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
+@ComponentScan(basePackages = "com/sideproject/security")
+@WithMockUser
 public class UserControllerTest {
 
     @Autowired
@@ -46,7 +54,8 @@ public class UserControllerTest {
         mockMvc.perform(
                 get("/signup/id")
                         .param("id", userId)
-                        .accept(MediaType.APPLICATION_JSON) )
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").value("not duplicated"))
