@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.stream.Stream;
 
 @RestController
 public class UserController {
@@ -37,10 +39,14 @@ public class UserController {
         boolean result = userService.getById(userId);
 
         if ( result ) {
-            return ResponseEntity.ok().body("not duplicated");
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .data(Arrays.asList(userId))
+                    .build();
+            return ResponseEntity.ok().body(responseDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
                             .error("duplicated")
+                            .data(Arrays.asList(userId))
                             .build();
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
@@ -57,10 +63,15 @@ public class UserController {
             UserDTO userResponseDTO = userService.createUser(userDTO);
 
             if (userResponseDTO.getId() != null) {
-                return ResponseEntity.ok().body("success");
+                ResponseDTO responseDTO = ResponseDTO.builder()
+                        .data(Arrays.asList(userResponseDTO))
+                        .build();
+
+                return ResponseEntity.ok().body(responseDTO);
             } else {
                 ResponseDTO responseDTO = ResponseDTO.builder()
                         .error("회원 가입 중 에러 발생 관리자에게 문의해주세요.")
+                        .data(Arrays.asList(userDTO))
                         .build();
 
                 return ResponseEntity
@@ -70,6 +81,7 @@ public class UserController {
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("잘못된 요청입니다.")
+                    .data(Arrays.asList(userDTO))
                     .build();
 
             return ResponseEntity
@@ -90,10 +102,12 @@ public class UserController {
                     .email(user.getEmail())
                     .token(token)
                     .build();
+
             return ResponseEntity.ok().body(responseUserDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("Login failed")
+                    .data(Arrays.asList(userDTO))
                     .build();
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -110,10 +124,15 @@ public class UserController {
             if ( verification ) {
                 emailService.sendSimpleMail(userDto.getEmail());
 
-                return ResponseEntity.ok().body("not duplicated");
+                ResponseDTO responseDTO = ResponseDTO.builder()
+                        .data(Arrays.asList(userDto.getEmail()))
+                        .build();
+
+                return ResponseEntity.ok().body(responseDTO);
             } else {
                 ResponseDTO responseDTO = ResponseDTO.builder()
                         .error("duplicated")
+                        .data(Arrays.asList(userDto))
                         .build();
                 return ResponseEntity
                         .status(HttpStatus.CONFLICT)
@@ -122,6 +141,7 @@ public class UserController {
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("이메일 인증 중 에러 발생 관리자에게 문의 주세요.")
+                    .data(Arrays.asList(userDto))
                     .build();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -144,14 +164,15 @@ public class UserController {
             if(!emailService.verifyEmail(email, code)){
                 return ResponseEntity
                         .status(409)
-                        .body("Email verification failure");
+                        .body(Arrays.asList("Email verification failure", email, code));
             }
             return ResponseEntity
                     .ok()
-                    .body("Email verification successful");
+                    .body(Arrays.asList("Email verification successful", email, code));
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("인증 코드 확인 중 에러 발생 관리자에게 문의 주세요.")
+                    .data(Arrays.asList(email, code))
                     .build();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
