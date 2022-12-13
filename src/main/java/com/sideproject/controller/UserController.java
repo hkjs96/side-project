@@ -6,6 +6,7 @@ import com.sideproject.entity.UserEntity;
 import com.sideproject.security.TokenProvider;
 import com.sideproject.service.EmailService;
 import com.sideproject.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,9 @@ public class UserController {
         this.tokenProvider = tokenProvider;
     }
 
-    @GetMapping ("/signup/id")
-    public ResponseEntity<?> duplicateIdCheck(@RequestParam("id") String userId) {
+    @ApiOperation(value = "아이디 중복 체크", notes = "사용할 아이디가 이미 존재하는지 확인.")
+    @GetMapping ("/signup/{id}")
+    public ResponseEntity<?> duplicateIdCheck(@PathVariable("id") String userId) {
 
         boolean result = userService.getById(userId);
 
@@ -94,7 +96,7 @@ public class UserController {
                     .error("Login failed")
                     .build();
             return ResponseEntity
-                    .badRequest()
+                    .status(HttpStatus.UNAUTHORIZED)
                     .body(responseDTO);
         }
     }

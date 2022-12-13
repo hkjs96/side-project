@@ -26,6 +26,24 @@ public class WebSecurityConfig {
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] PERMIT_URL_ARRAY = {
+            /* swagger v2 */
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            /* swagger v3 */
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+
+            /* api */
+            "/signup/**",
+            "/signin",
+    };
+
     WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -42,7 +60,7 @@ public class WebSecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                    .antMatchers("/signup/**", "/signin")
+                    .antMatchers(PERMIT_URL_ARRAY)
                         .permitAll()
                     .anyRequest()
                         .authenticated()

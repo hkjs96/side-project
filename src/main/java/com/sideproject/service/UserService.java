@@ -23,7 +23,7 @@ public class UserService {
     public UserEntity getByCredentials(UserDTO userDTO){
         // TODO: Profile은 어떻게 처리할까? 따로 API 개발??
         final UserEntity userEntity = userRepository.findById(userDTO.getId()).orElse(null);
-        if (userEntity != null &&
+        if (userEntity != null  &&
             passwordEncoder.matches(
                     userDTO.getPassword(),
                     userEntity.getPassword())) {
