@@ -52,8 +52,7 @@ public class UserControllerTest {
         given(userService.getById(userId)).willReturn(true);
 
         mockMvc.perform(
-                get("/signup/id")
-                        .param("id", userId)
+                    get("/signup/" + userId)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -80,8 +79,7 @@ public class UserControllerTest {
         given(userService.getById(userId)).willReturn(false);
 
         mockMvc.perform(
-                        get("/signup/id")
-                                .param("id", userId)
+                        get("/signup/" + userId)
                                 .accept(MediaType.APPLICATION_JSON) )
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
