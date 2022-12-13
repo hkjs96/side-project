@@ -1,5 +1,6 @@
 package com.sideproject.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,8 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthcheckController {
 
     @GetMapping("/healthcheck")
-    public HealthStatus healthCheck() {
-        return new HealthStatus("ok");
+    public ResponseEntity<?> healthCheck() {
+        ResponseEntity responseEntity = ResponseEntity.ok().body(new HealthStatus("ok").getStatus());
+        return responseEntity;
     }
 
     class HealthStatus {
