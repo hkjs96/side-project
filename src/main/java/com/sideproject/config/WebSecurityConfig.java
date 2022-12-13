@@ -40,6 +40,7 @@ public class WebSecurityConfig {
             "/swagger-ui/**",
 
             /* api */
+            "/healthcheck",
             "/signup/**",
             "/signin",
     };
