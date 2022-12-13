@@ -23,7 +23,7 @@ then
   docker-compose -f docker-compose/redis/docker-compose.yml up -d
 
   echo "nohup java -jar ${JARFILE} &"
-  nohup java -jar ${JARFILE} &
+  BUILD_ID=dontKillMe nohup java -jar ${JARFILE} 2>> /dev/null >> /dev/null &
 else
   echo "파라미터가 필요"
 fi
