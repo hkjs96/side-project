@@ -1,7 +1,5 @@
 package com.sideproject.controller;
 
-import com.sideproject.config.WebMvcConfig;
-import com.sideproject.config.WebSecurityConfig;
 import com.sideproject.dto.ResponseDTO;
 import com.sideproject.service.EmailService;
 import com.sideproject.service.UserService;
@@ -14,12 +12,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,8 +44,12 @@ public class UserControllerTest {
 
         String userId = "user123";
 
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .data(Arrays.asList(userId))
+                .build();
+
         ResponseEntity responseEntity = ResponseEntity
-                .ok().body("not duplicated");
+                .ok().body(responseDTO);
 
         given(userService.getById(userId)).willReturn(true);
 
@@ -57,7 +59,7 @@ public class UserControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").value("not duplicated"))
+                .andExpect(jsonPath("$.data", hasItem(userId)))
                 .andDo(print());
 
         verify(userService).getById(userId);
@@ -71,6 +73,7 @@ public class UserControllerTest {
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .error("duplicated")
+                .data(Arrays.asList(userId))
                 .build();
         ResponseEntity responseEntity = ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -84,7 +87,7 @@ public class UserControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("duplicated"))
-                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(jsonPath("$.data", hasItem(userId)))
                 .andDo(print());
 
         verify(userService).getById(userId);
