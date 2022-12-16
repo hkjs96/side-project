@@ -1,11 +1,10 @@
 package com.sideproject.repository;
 
-import com.sideproject.entity.User;
+import com.sideproject.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    User findByEmail(String email);
 }

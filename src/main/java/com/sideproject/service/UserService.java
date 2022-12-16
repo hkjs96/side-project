@@ -2,7 +2,7 @@ package com.sideproject.service;
 
 import com.sideproject.dto.EmailDTO;
 import com.sideproject.dto.UserDTO;
-import com.sideproject.entity.UserEntity;
+import com.sideproject.entity.User;
 import com.sideproject.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,28 +20,28 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserEntity getByCredentials(UserDTO userDTO){
+    public User getByCredentials(UserDTO userDTO){
         // TODO: Profile은 어떻게 처리할까? 따로 API 개발??
-        final UserEntity userEntity = userRepository.findById(userDTO.getId()).orElse(null);
-        if (userEntity != null  &&
+        final User user = userRepository.findById(userDTO.getId()).orElse(null);
+        if (user != null  &&
             passwordEncoder.matches(
                     userDTO.getPassword(),
-                    userEntity.getPassword())) {
+                    user.getPassword())) {
 
-            return userEntity;
+            return user;
         }
         return null;
     }
 
     public boolean getByEmail(EmailDTO emailDTO) {
-        UserEntity userEntity = userRepository.findByEmail(emailDTO.getEmail());
-        return userEntity == null;
+        User user = userRepository.findByEmail(emailDTO.getEmail());
+        return user == null;
     }
 
     public boolean getById(final String userId) {
-        UserEntity userEntity = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
 
-        return userEntity == null;
+        return user == null;
 
     }
 
@@ -53,14 +53,14 @@ public class UserService {
 //                log.warn("Username already exists {]", userDTO.getId());
                 throw new RuntimeException("Username already exists");
             }
-            UserEntity userEntity = UserEntity.builder()
+            User user = User.builder()
                     .id(userDTO.getId())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
                     .name(userDTO.getName())
                     .email(userDTO.getEmail())
                     .build();
 
-            UserEntity createUser = userRepository.save(userEntity);
+            User createUser = userRepository.save(user);
 
             createUser = userRepository.findById(createUser.getId()).get();
 

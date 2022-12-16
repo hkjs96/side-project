@@ -1,11 +1,11 @@
 package com.sideproject.entity;
 
-import com.sideproject.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,9 +16,10 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Table(name="USERS")
-public class UserEntity {
+public class User {
 
     @Id
+    @Column(name = "user_id")
     private String id;
     private String name;
     private String password;
