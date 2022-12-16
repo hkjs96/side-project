@@ -1,5 +1,6 @@
 package com.sideproject.controller;
 
+import com.sideproject.dto.IdDTO;
 import com.sideproject.dto.ResponseDTO;
 import com.sideproject.service.EmailService;
 import com.sideproject.service.UserService;
@@ -43,9 +44,10 @@ public class UserControllerTest {
     void duplicateIdCheck() throws Exception {
 
         String userId = "user123";
+        IdDTO idDTO = new IdDTO(userId);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
-                .data(Arrays.asList(userId))
+                .data(idDTO)
                 .build();
 
         ResponseEntity responseEntity = ResponseEntity
@@ -59,7 +61,7 @@ public class UserControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data", hasItem(userId)))
+                .andExpect(jsonPath("$.data.id").value(userId))
                 .andDo(print());
 
         verify(userService).getById(userId);
@@ -70,10 +72,11 @@ public class UserControllerTest {
     void failedDuplicateIdCheck() throws Exception {
 
         String userId = "user123";
+        IdDTO idDTO = new IdDTO(userId);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .error("duplicated")
-                .data(Arrays.asList(userId))
+                .data(idDTO)
                 .build();
         ResponseEntity responseEntity = ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -87,7 +90,7 @@ public class UserControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.error").value("duplicated"))
-                .andExpect(jsonPath("$.data", hasItem(userId)))
+                .andExpect(jsonPath("$.data.id").value(userId))
                 .andDo(print());
 
         verify(userService).getById(userId);
