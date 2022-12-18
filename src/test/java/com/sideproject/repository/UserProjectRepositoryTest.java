@@ -1,26 +1,26 @@
 package com.sideproject.repository;
 
 import com.sideproject.constant.Authority;
-import com.sideproject.entity.ParticipationProject;
+import com.sideproject.entity.Participation;
 import com.sideproject.entity.Project;
 import com.sideproject.entity.User;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@DataJpaTest
 @TestPropertySource(locations = "classpath:application-test.yml")
-public class ParticipationProjectRepositoryTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+public class ParticipationRepositoryTest {
     @Autowired
-    ParticipationProjectRepository participationProjectRepository;
+    ParticipationRepository participationRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -48,16 +48,16 @@ public class ParticipationProjectRepositoryTest {
                 .build();
         Project savedProject = projectRepository.save(project);
 
-        ParticipationProject participationProject = ParticipationProject.builder()
+        Participation participation = Participation.builder()
                 .user(user)
                 .authority(Authority.ALL)
                 .project(project)
                 .build();
 
         // when
-        ParticipationProject savedParticipationProject = participationProjectRepository.save(participationProject);
-        assertEquals(savedUser.getId(), savedParticipationProject.getUser().getId());
-        assertEquals(savedProject.getId(), savedParticipationProject.getProject().getId());
-        assertEquals(participationProject.getAuthority(), savedParticipationProject.getAuthority());
+        Participation savedParticipation = participationRepository.save(participation);
+        assertEquals(savedUser.getId(), savedParticipation.getUser().getId());
+        assertEquals(savedProject.getId(), savedParticipation.getProject().getId());
+        assertEquals(participation.getAuthority(), savedParticipation.getAuthority());
     }
 }

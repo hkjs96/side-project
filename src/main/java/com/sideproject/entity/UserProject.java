@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 //@Table
-public class ParticipationProject {
+public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
