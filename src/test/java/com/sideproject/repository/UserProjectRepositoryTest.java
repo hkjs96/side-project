@@ -1,7 +1,7 @@
 package com.sideproject.repository;
 
 import com.sideproject.constant.Authority;
-import com.sideproject.entity.Participation;
+import com.sideproject.entity.UserProject;
 import com.sideproject.entity.Project;
 import com.sideproject.entity.User;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class ParticipationRepositoryTest {
+public class UserProjectRepositoryTest {
     @Autowired
-    ParticipationRepository participationRepository;
+    UserProjectRepository participationRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -48,14 +48,14 @@ public class ParticipationRepositoryTest {
                 .build();
         Project savedProject = projectRepository.save(project);
 
-        Participation participation = Participation.builder()
+        UserProject participation = UserProject.builder()
                 .user(user)
                 .authority(Authority.ALL)
                 .project(project)
                 .build();
 
         // when
-        Participation savedParticipation = participationRepository.save(participation);
+        UserProject savedParticipation = participationRepository.save(participation);
         assertEquals(savedUser.getId(), savedParticipation.getUser().getId());
         assertEquals(savedProject.getId(), savedParticipation.getProject().getId());
         assertEquals(participation.getAuthority(), savedParticipation.getAuthority());
