@@ -6,28 +6,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="Project")
-public class Project {
-
+@Entity
+public class ProjectRole {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "project_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     private String name;
-
-    private String topic;
-
-    private String goal;
-
-    private LocalDateTime startDate;
-
-    private LocalDateTime endDate;
 }

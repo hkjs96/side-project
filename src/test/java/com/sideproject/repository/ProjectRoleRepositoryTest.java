@@ -1,9 +1,7 @@
 package com.sideproject.repository;
 
-import com.sideproject.constant.Authority;
-import com.sideproject.entity.UserProject;
 import com.sideproject.entity.Project;
-import com.sideproject.entity.User;
+import com.sideproject.entity.ProjectRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -14,31 +12,19 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-@TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DataJpaTest
-public class UserProjectRepositoryTest {
-    @Autowired
-    UserProjectRepository userProjectRepository;
+class ProjectRoleRepositoryTest {
 
     @Autowired
-    UserRepository userRepository;
+    ProjectRoleRepository projectRoleRepository;
 
     @Autowired
     ProjectRepository projectRepository;
 
     @Test
-    void saveTest() {
+    void countByProjectId() {
         // given
-        User user =  User.builder()
-                .id("test")
-                .password("test")
-                .email("test@test.com")
-                .name("홍길동")
-                .build();
-        User savedUser = userRepository.save(user);
-
         Project project = Project.builder()
                 .name("테스트 프로젝트")
                 .topic("테스트 프로젝트 주제")
@@ -48,18 +34,21 @@ public class UserProjectRepositoryTest {
                 .build();
         Project savedProject = projectRepository.save(project);
 
-        UserProject userProject = UserProject.builder()
-                .user(user)
-                .authority(Authority.ALL)
-                .project(project)
+        ProjectRole projectRole = ProjectRole.builder()
+                .name("기확자")
+                .project(savedProject)
                 .build();
+        ProjectRole savedProjectRole = projectRoleRepository.save(projectRole);
+        ProjectRole projectRole2 = ProjectRole.builder()
+                .name("PM")
+                .project(savedProject)
+                .build();
+        ProjectRole savedProjectRole2 = projectRoleRepository.save(projectRole2);
 
         // when
-        UserProject savedUserProject = userProjectRepository.save(userProject);
+        Long count = projectRoleRepository.countByProjectId(savedProject.getId());
 
         // then
-        assertEquals(savedUser.getId(), savedUserProject.getUser().getId());
-        assertEquals(savedProject.getId(), savedUserProject.getProject().getId());
-        assertEquals(userProject.getAuthority(), savedUserProject.getAuthority());
+        assertEquals(2L, count);
     }
 }
