@@ -14,9 +14,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // TODO: 나중에 여기 Mapping 및 Origin 정보 같은 것 변경하기
         registry.addMapping("/**")
 //                .allowedOrigins("*")
+                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-//                .allowCredentials(true)
+                .allowCredentials(true)
                 .maxAge(MAX_AGE_SECS);
     }
 }

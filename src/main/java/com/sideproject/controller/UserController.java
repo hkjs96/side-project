@@ -1,18 +1,20 @@
 package com.sideproject.controller;
 
+import com.sideproject.dto.EmailDTO;
+import com.sideproject.dto.IdDTO;
 import com.sideproject.dto.ResponseDTO;
 import com.sideproject.dto.UserDTO;
-import com.sideproject.entity.UserEntity;
+import com.sideproject.entity.User;
 import com.sideproject.security.TokenProvider;
 import com.sideproject.service.EmailService;
 import com.sideproject.service.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Base64;
 
 @RestController
@@ -33,19 +35,21 @@ public class UserController {
 
     @ApiOperation(value = "아이디 중복 체크", notes = "사용할 아이디가 이미 존재하는지 확인.")
     @GetMapping ("/signup/{id}")
-    public ResponseEntity<?> duplicateIdCheck(@PathVariable("id") String userId) {
+    public ResponseEntity<?> duplicateIdCheck(
+            @ApiParam(name = "아이디", required = true) @PathVariable("id") String userId
+    ) {
 
         boolean result = userService.getById(userId);
 
         if ( result ) {
             ResponseDTO responseDTO = ResponseDTO.builder()
-                    .data(Arrays.asList(userId))
+                    .data(new IdDTO(userId))
                     .build();
             return ResponseEntity.ok().body(responseDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
                             .error("duplicated")
-                            .data(Arrays.asList(userId))
+                            .data(new IdDTO(userId))
                             .build();
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
@@ -54,7 +58,9 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<?> createUser(
+            @ApiParam(name = "회원가입 정보", required = true) @RequestBody UserDTO userDTO
+    ){
 
         try {
             // TODO: validation 체크하기, id 없으면 이상한 값으로 나간다.
@@ -63,14 +69,14 @@ public class UserController {
 
             if (userResponseDTO.getId() != null) {
                 ResponseDTO responseDTO = ResponseDTO.builder()
-                        .data(Arrays.asList(userResponseDTO))
+                        .data(userDTO)
                         .build();
 
                 return ResponseEntity.ok().body(responseDTO);
             } else {
                 ResponseDTO responseDTO = ResponseDTO.builder()
                         .error("회원 가입 중 에러 발생 관리자에게 문의해주세요.")
-                        .data(Arrays.asList(userDTO))
+                        .data(userDTO)
                         .build();
 
                 return ResponseEntity
@@ -80,7 +86,7 @@ public class UserController {
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("잘못된 요청입니다.")
-                    .data(Arrays.asList(userDTO))
+                    .data(userDTO)
                     .build();
 
             return ResponseEntity
@@ -90,8 +96,10 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@RequestBody UserDTO userDTO) {
-         UserEntity user = userService.getByCredentials(userDTO);
+    public ResponseEntity<?> authenticate(
+           @ApiParam(name="로그인 정보") @RequestBody UserDTO userDTO
+    ) {
+         User user = userService.getByCredentials(userDTO);
 
         if (user != null) {
             final String token = tokenProvider.create(user);
@@ -102,11 +110,15 @@ public class UserController {
                     .token(token)
                     .build();
 
-            return ResponseEntity.ok().body(responseUserDTO);
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .data(responseUserDTO)
+                    .build();
+
+            return ResponseEntity.ok().body(responseDTO);
         } else {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("Login failed")
-                    .data(Arrays.asList(userDTO))
+                    .data(userDTO)
                     .build();
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -115,23 +127,25 @@ public class UserController {
     }
 
     @PostMapping ("/signup/email")
-    public ResponseEntity<?> verifyEmail(@RequestBody UserDTO userDto) {
+    public ResponseEntity<?> verifyEmail(
+            @ApiParam(name = "이메일", readOnly = true) @RequestBody EmailDTO emailDTO
+    ) {
 
-        boolean verification = userService.getByEmail(userDto);
+        boolean verification = userService.getByEmail(emailDTO);
 
         try {
             if ( verification ) {
-                emailService.sendSimpleMail(userDto.getEmail());
+                emailService.sendSimpleMail(emailDTO.getEmail());
 
                 ResponseDTO responseDTO = ResponseDTO.builder()
-                        .data(Arrays.asList(userDto.getEmail()))
+                        .data(emailDTO)
                         .build();
 
                 return ResponseEntity.ok().body(responseDTO);
             } else {
                 ResponseDTO responseDTO = ResponseDTO.builder()
                         .error("duplicated")
-                        .data(Arrays.asList(userDto))
+                        .data(emailDTO)
                         .build();
                 return ResponseEntity
                         .status(HttpStatus.CONFLICT)
@@ -140,7 +154,7 @@ public class UserController {
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("이메일 인증 중 에러 발생 관리자에게 문의 주세요.")
-                    .data(Arrays.asList(userDto))
+                    .data(emailDTO)
                     .build();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -155,23 +169,35 @@ public class UserController {
 
     @GetMapping("/signup/email")
     public ResponseEntity<?> verifyAuthenticationNumber(
-            @RequestParam String email,
-            @RequestParam String code
+            @ApiParam(name = "이메일", readOnly = true) @RequestParam String email,
+            @ApiParam(name = "인증번호", readOnly = true) @RequestParam String code
             ) {
 
+        EmailDTO emailDTO = EmailDTO.builder().email(email).authenticationNumber(code).build();
+
         try {
-            if(!emailService.verifyEmail(email, code)){
+            if(!emailService.verifyEmail(emailDTO)){
+                ResponseDTO responseDTO = ResponseDTO.builder()
+                        .error("Email verification failure")
+                        .data(emailDTO)
+                        .build();
+
                 return ResponseEntity
                         .status(409)
-                        .body(Arrays.asList("Email verification failure", email, code));
+                        .body(responseDTO);
             }
+            ResponseDTO responseDTO = ResponseDTO.builder()
+//                    .error("Email verification successful")
+                    .data(emailDTO)
+                    .build();
+
             return ResponseEntity
                     .ok()
-                    .body(Arrays.asList("Email verification successful", email, code));
+                    .body(responseDTO);
         } catch (Exception e) {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("인증 코드 확인 중 에러 발생 관리자에게 문의 주세요.")
-                    .data(Arrays.asList(email, code))
+                    .data(emailDTO)
                     .build();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

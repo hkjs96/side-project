@@ -1,5 +1,6 @@
 package com.sideproject.service;
 
+import com.sideproject.dto.EmailDTO;
 import com.sideproject.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +49,11 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public Boolean verifyEmail(String email, String authenticationNumber) {
+    public Boolean verifyEmail(EmailDTO emailDTO) {
         try {
-            if (authenticationNumber.equals(redisUtil.getData(email))) {
-                redisUtil.delete(email);
+            if (emailDTO.getAuthenticationNumber()
+                    .equals(redisUtil.getData(emailDTO.getEmail()))) {
+                redisUtil.delete(emailDTO.getEmail());
                 return true;
             } else {
                return false;
