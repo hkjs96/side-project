@@ -24,7 +24,7 @@ public class ProjectService {
     public Long createProject(ProjectDTO projectDTO) {
         /*
             Project.save
-            UserProject.save
+            UserProject.save -> 사용자 추가가 아니라 프로젝트 생성자 프로필 추가
             ProjectRole.save
         */
         Project project = Project.builder()
@@ -39,7 +39,9 @@ public class ProjectService {
 
         projectRoleService.createProjectRole(projectDTO, createdProject);
 
-        // TODO: 프로젝트 이용자 관련 추가하기
+        // TODO: 프로젝트 생성자 프로필 생성하기
+
+        // TODO: 생성자 프로필과 프로젝트 관계에 나오는 Profile Project 입력하기
 
         return createdProject.getId();
     }

@@ -15,6 +15,7 @@ import javax.persistence.*;
 public class ProjectRole {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = " project_role_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

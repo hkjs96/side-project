@@ -30,4 +30,6 @@ public class Project {
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
+
+    // TODO: ONE-TO-MANY 로 양방향 해야되는가? 여기서 구해올 필요가 없다면 단방향이 맞는 것 같긴하다.
 }
