@@ -2,9 +2,11 @@ package com.sideproject.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CreateProjectDTO {
     private ProjectDTO project;
     private UserProfileDTO userProfile;
-    private ProjectRoleDTO projectRole;
+    private List<ProjectRoleDTO> projectRoles;
 }

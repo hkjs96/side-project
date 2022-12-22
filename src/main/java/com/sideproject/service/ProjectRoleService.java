@@ -1,5 +1,6 @@
 package com.sideproject.service;
 
+import com.sideproject.dto.CreateProjectDTO;
 import com.sideproject.dto.ProjectDTO;
 import com.sideproject.dto.ProjectRoleDTO;
 import com.sideproject.entity.Project;
@@ -20,9 +21,9 @@ public class ProjectRoleService {
     }
 
     @Transactional
-    public List<ProjectRoleDTO> createProjectRole(ProjectDTO projectDTO, Project project) {
+    public List<ProjectRoleDTO> createProjectRole(CreateProjectDTO projectDTO, Project project) {
 
-        for (ProjectRoleDTO projectRoleDTO : projectDTO.getProjectRoleDTOList()) {
+        for (ProjectRoleDTO projectRoleDTO : projectDTO.getProjectRoles()) {
             ProjectRole projectRole = ProjectRole.builder()
                     .project(project)
                     .name(projectRoleDTO.getName())
@@ -31,6 +32,6 @@ public class ProjectRoleService {
             projectRoleRepository.save(projectRole);
         }
 
-        return projectDTO.getProjectRoleDTOList();
+        return projectDTO.getProjectRoles();
     }
 }

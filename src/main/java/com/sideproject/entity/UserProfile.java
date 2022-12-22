@@ -33,6 +33,7 @@ public class UserProfile {
 
     // TODO: https://spring.io/guides/gs/uploading-files/
     private String photoName;
+    private String photoOriginalName;
     private Long photoSize; // Byte 크기로
     private String photoType;
 }

@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userId = tokenProvider.validateAndGetUserId(token);
                 log.info("Authenticated user ID : " + userId);
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId, // 인증된 사용자의 정보, 보톤 UserDatails 이라는 오브젝트를 넣는데, 여기는 X
+                        userId, // 인증된 사용자의 정보, 보통 UserDetails 이라는 오브젝트를 넣는데, 여기는 X
                         null,
                         AuthorityUtils.NO_AUTHORITIES
                 );

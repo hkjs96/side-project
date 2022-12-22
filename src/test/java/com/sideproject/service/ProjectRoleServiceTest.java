@@ -1,5 +1,6 @@
 package com.sideproject.service;
 
+import com.sideproject.dto.CreateProjectDTO;
 import com.sideproject.dto.ProjectDTO;
 import com.sideproject.dto.ProjectRoleDTO;
 import com.sideproject.entity.Project;
@@ -47,12 +48,10 @@ public class ProjectRoleServiceTest {
 
         ProjectRoleDTO projectRoleDto = new ProjectRoleDTO("기획자");
 
-        ProjectDTO projectDTO = ProjectDTO.builder()
-                        .ProjectRoleDTOList(
-                                Arrays.asList(projectRoleDto))
-                        .build();
+        CreateProjectDTO createProjectDTO = new CreateProjectDTO();
+        createProjectDTO.setProjectRoles(Arrays.asList(projectRoleDto));
 
-        List<ProjectRoleDTO> projectRoleDtos = projectRoleService.createProjectRole(projectDTO, project);
+        List<ProjectRoleDTO> projectRoleDtos = projectRoleService.createProjectRole(createProjectDTO, project);
 
         Assertions.assertEquals(projectRoleDtos.get(0).getName(), "기획자");
 

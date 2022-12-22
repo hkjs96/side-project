@@ -21,7 +21,7 @@ public class ProjectDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    private List<ProjectRoleDTO> ProjectRoleDTOList = new ArrayList<>();
+//    private List<ProjectRoleDTO> ProjectRoleDTOList = new ArrayList<>();
 
     // TODO: User 관련 데이터 어떻게 처리?
 //    private List<>

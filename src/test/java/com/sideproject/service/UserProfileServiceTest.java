@@ -1,16 +1,21 @@
 package com.sideproject.service;
 
 import com.sideproject.dto.UserProfileDTO;
-import com.sideproject.entity.Project;
 import com.sideproject.entity.User;
 import com.sideproject.entity.UserProfile;
+import com.sideproject.properties.StorageProperties;
 import com.sideproject.repository.UserProfileRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -20,11 +25,16 @@ public class UserProfileServiceTest {
 
     private UserProfileRepository userProfileRepository =
             Mockito.mock(UserProfileRepository.class);
+    private FileSystemStorageService fileSystemStorageService =
+            Mockito.mock(FileSystemStorageService.class);
 
     private UserProfileService userProfileService;
 
     @BeforeEach
-    public void setUpTest() { userProfileService = new UserProfileService(userProfileRepository); }
+    public void setUpTest() {
+        userProfileService =
+                new UserProfileService(userProfileRepository, fileSystemStorageService);
+    }
 
     @Test
     @DisplayName("프로젝트 생성자 프로필 입력하기")
@@ -49,11 +59,11 @@ public class UserProfileServiceTest {
                 .photoType(".png")
                 .build();
 
-        UserProfileDTO savedUserProfileDto = userProfileService.createProfile(userProfileDto, user);
+        UserProfile savedUserProfile = userProfileService.createProfile(userProfileDto, user);
 
-        Assertions.assertEquals(savedUserProfileDto.getName(), userProfileDto.getName());
-        Assertions.assertEquals(savedUserProfileDto.getPhotoName(), userProfileDto.getPhotoName());
-        Assertions.assertEquals(savedUserProfileDto.getStudentId(), userProfileDto.getStudentId());
+        assertEquals(savedUserProfile.getName(), userProfileDto.getName());
+        assertEquals(savedUserProfile.getPhotoOriginalName(), userProfileDto.getPhotoName());
+        assertEquals(savedUserProfile.getStudentId(), userProfileDto.getStudentId());
 
         verify(userProfileRepository).save(any());
     }
@@ -61,7 +71,17 @@ public class UserProfileServiceTest {
     @Test
     @DisplayName("프로필 이미지 저장하기")
     void 프로필_이미지_저장하기() {
+        Mockito.when(fileSystemStorageService.store(
+                any(MockMultipartFile.class),
+                any(String.class)))
+                .thenReturn("test.png");
 
+
+        String fileName = userProfileService.saveProfileImage(new MockMultipartFile("foo", "../foo.txt",
+                MediaType.TEXT_PLAIN_VALUE, "Hello, World".getBytes()),
+                UUID.randomUUID().toString());
+
+        assertEquals(fileName.contains("png"), true);
     }
 
 }
