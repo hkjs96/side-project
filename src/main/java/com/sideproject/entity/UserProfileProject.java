@@ -14,14 +14,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 //@Table
-public class UserProject {
+public class UserProfileProject {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
@@ -31,4 +31,8 @@ public class UserProject {
     private Authority authority;
 
     // TODO: 프로젝트 역할에 관한 내용이 여기에 들어가야 할까?
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_role_id")
+    private ProjectRole projectRole;
 }

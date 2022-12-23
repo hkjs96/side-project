@@ -1,5 +1,7 @@
 package com.sideproject.security;
 
+import com.sideproject.entity.User;
+import com.sideproject.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -24,6 +26,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private TokenProvider tokenProvider;
 
+    private UserRepository userRepository;
+
     JwtAuthenticationFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
@@ -37,9 +41,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Filter is running...");
             if(token != null && !token.equalsIgnoreCase("null")) {
                 String userId = tokenProvider.validateAndGetUserId(token);
+                // TODO: 시큐리티의 UserDetails 이런 부분 참고 해서 수정 필요, 일단 repository에서 검색해서 넣음...
+
                 log.info("Authenticated user ID : " + userId);
                 AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId, // 인증된 사용자의 정보, 보톤 UserDatails 이라는 오브젝트를 넣는데, 여기는 X
+//                        userId, // 인증된 사용자의 정보, 보통 UserDetails 이라는 오브젝트를 넣는데, 여기는 X
+                        userRepository.findById(userId).get(),
                         null,
                         AuthorityUtils.NO_AUTHORITIES
                 );
