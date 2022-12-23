@@ -19,6 +19,8 @@ public class UserProfileDTO {
     private Long studentId;
     private String explain;
 
+    private String projectRole;
+
     private String photoName;
     private Long photoSize;
     private String photoType;

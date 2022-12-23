@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface ProjectRoleRepository extends JpaRepository<ProjectRole, Long> {
 
     Long countByProjectId(Long projectId);
+
+    ProjectRole findByName(String roleName);
 }

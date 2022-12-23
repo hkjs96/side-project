@@ -23,7 +23,6 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
-
     private final TokenProvider tokenProvider;
 
     @Autowired

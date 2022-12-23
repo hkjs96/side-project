@@ -34,4 +34,8 @@ public class ProjectRoleService {
 
         return projectDTO.getProjectRoles();
     }
+
+    public ProjectRole getProjectRole(String roleName) {
+        return projectRoleRepository.findByName(roleName);
+    }
 }
