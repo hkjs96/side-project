@@ -1,7 +1,6 @@
 package com.sideproject.service;
 
 import com.sideproject.dto.CreateProjectDTO;
-import com.sideproject.dto.ProjectDTO;
 import com.sideproject.dto.ProjectRoleDTO;
 import com.sideproject.entity.Project;
 import com.sideproject.entity.ProjectRole;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
