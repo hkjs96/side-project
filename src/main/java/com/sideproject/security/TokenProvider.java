@@ -2,7 +2,7 @@ package com.sideproject.security;
 
 import com.sideproject.entity.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+    import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,10 @@ public class TokenProvider {
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public String create(User user) {
+//        Date expiryDate = Date.from(
+//                Instant.now().plus(1, ChronoUnit.DAYS));
         Date expiryDate = Date.from(
-                Instant.now().plus(1, ChronoUnit.DAYS));
+                Instant.now().plus(1, ChronoUnit.MINUTES));
 
         // TODO: Issuer 어떻게 할지 정의하기, payload 에 어떤 내용 담을지 정하기
         return Jwts.builder()
@@ -33,13 +35,13 @@ public class TokenProvider {
                 .compact();
     }
 
-    public String validateAndGetUserId(String token) {
+    public Claims validateAndGetUserId(String token) {
         Claims claims= Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.getSubject();
+        return claims;
     }
 }

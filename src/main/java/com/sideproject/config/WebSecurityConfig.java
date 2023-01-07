@@ -1,5 +1,7 @@
 package com.sideproject.config;
 
+import com.google.gson.Gson;
+import com.sideproject.dto.ResponseDTO;
 import com.sideproject.security.JwtAuthenticationFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 @EnableWebSecurity
 @Slf4j
@@ -89,21 +92,33 @@ public class WebSecurityConfig {
         log.warn("accessDeniedHandler");
         return (request, response, e) -> {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write("ACCESS DENIED");
-            response.getWriter().flush();
-            response.getWriter().close();
+            response.setContentType("application/json");
+//            response.getWriter().write("ACCESS DENIED");
+            PrintWriter out = response.getWriter();
+            Gson gson = new Gson();
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("ACCESS DENIED")
+                    .data("")
+                    .build();
+            String json = gson.toJson(responseDTO);
+            out.println(json);
         };
     }
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, e) -> {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write("UNAUTHORIZED");
-            response.getWriter().flush();
-            response.getWriter().close();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            PrintWriter out = response.getWriter();
+            Gson gson = new Gson();
+            // response.getWriter().write("UNAUTHORIZED");
+            ResponseDTO responseDTO = ResponseDTO.builder()
+                    .error("UNAUTHORIZED")
+                    .data("")
+                    .build();
+            String json = gson.toJson(responseDTO);
+            out.println(json);
         };
     }
 
